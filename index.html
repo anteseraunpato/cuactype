@@ -46,6 +46,15 @@
         margin: 0;
     }
 
+    v-word {
+
+        border-bottom: 1.5px solid transparent;
+        transition: border-color 0.3s ease-in-out;
+        &.marked {
+            border-bottom: 1.5px solid var(--red);
+        }
+    }
+
     v-letter {
         color: var(--gray);
         position: relative;
@@ -199,7 +208,7 @@
             const $nextLetter = $nextWord.querySelector('v-letter')
 
             //Eliminamos la clase active de la palabra y letra actual usando classList.remove
-            $currentWord.classList.remove('active')
+            $currentWord.classList.remove('active', 'marked')
             $currentLetter.classList.remove('active')
 
             //Agregamos la clase activa a la siguiente palabra y letra
@@ -207,6 +216,14 @@
             $nextLetter.classList.add('active')
             //Reseteamos el input
             $input.value = ''
+
+            //Recuperamos todas las letras de la palabra anterior/actual y comprobamos si la longitud de las letras incorrectas es mayor a cero, en cuyo caso nos faltan letras
+
+            const hasMissedLetters = $currentWord.querySelectorAll('v-letter:not(.correct)').length > 0
+            //Si tenemos letras faltantes agrega la clase marked a la palabra, sino agregamos la clase correct
+            const classToAdd = hasMissedLetters ? 'marked' : 'correct'
+
+            $currentWord.classList.add(classToAdd)
         }
     }
 
@@ -238,7 +255,7 @@
             
         })
         //Limpiamos la clase active de la letra actual
-        $currentLetter.classList.remove('active', ('is-last'))
+        $currentLetter.classList.remove('active', 'is-last')
         //Recuperamos la longitud del input y utilizando allLetters le ponemos que ponga la clase active a la letra en esa posicion. Es decir si mi input tiene 9 caracteres entonces el 9 caracter será la letra activa
         const inputLength = $input.value.length
         // $allLetters[inputLength].classList.add('active')
