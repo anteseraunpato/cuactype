@@ -53,11 +53,19 @@
         &.active::before {
             content: "|";
             color: var(--yellow);
-            font-size: 14px;
+            /* font-size: 14px; */
             position: absolute;
             left: -65%;
             animation:  1s blink infinite ease-in-out;
 
+        }
+
+        &.correct {
+            color: var(--greeen);
+        }
+
+        &.incorrect {
+            color: var(--red);
         }
 
 
@@ -65,11 +73,11 @@
 
     @keyframes blink {
 
-        0%, 50% {
+        0%, 25% {
         opacity:1;
         }
 
-        100% {
+        75% {
         opacity: 0;
     }
 
@@ -97,7 +105,7 @@
 
     const INITIAL_TIME = 30;
 
-    const TEXT = "El zorro marron rapida y velozmente salto sobre el agil perro que dormia junto al rio tranquilo y sereno bajo el cielo azul y despejado";
+    const TEXT = "el zorro marron rapida y velozmente salto sobre el agil perro que dormia junto al rio tranquilo y sereno bajo el cielo azul y despejado";
 
     let words = []
     let currentTime = INITIAL_TIME
@@ -152,8 +160,50 @@
 
     }
 
-    //Creamos la funcion para cada uno de los eventos
-    function initEvents() { }
+    //Creamos las funciones para cada uno de los eventos
+    function initEvents() { 
+
+        //Hacemos que al comenzar a escribir la página el input reciba el focus
+        document.addEventListener('keydown', () => {
+            $input.focus()
+        }
+    )
+    //Creamos las funciones que serán llamadas dependiendo si el usuario presiona o suelta una tecla
+    $input.addEventListener('keydown', onKeyDown)
+    $input.addEventListener('keyup', onKeyUp)
+
+    }
+
+    function onKeyDown() {}
+    function onKeyUp(){
+        //Recuperamos los elementos actuales
+        const $currentWord = $paragraph.querySelector('v-word.active')
+        const $currentLetter = $currentWord.querySelector('v-letter.active')
+
+        const currentWord = $currentWord.innerText.trim()
+        $input.maxLength = currentWord.length
+        console.log({value: $input.value, currentWord})
+
+        //Creamos una constante para obtener todas las letter de la palabra actual 
+        const $allLetters = $currentWord.querySelectorAll('v-letter')
+
+        //Limpiamos la clase correct e incorrect de cada letra
+        $allLetters.forEach($letter => $letter.classList.remove('correct', 'incorrect'))
+
+        //Recuperamos el valor del input y usando split convertimos cada letter en un array para poder comparar cada letra en la posición seleccionada con la letter que se encuentra en el index
+        $input.value.split('').forEach((char, index) => {
+            const $letter = $allLetters[index]
+            const letterToCheck = currentWord[index]
+        
+            //Comparamos la letra en nuestro input y la letra activa de la palabra activa y si son iguales agregamos la classe correct, sino agregamos la clase incorrect
+            const isCorrect = char === letterToCheck
+            const letterClass = isCorrect ? 'correct' : 'incorrect' 
+            $letter.classList.add(letterClass)
+            
+        })
+
+
+    }
 
     function gameOver () {
         console.log('findeljuego')
