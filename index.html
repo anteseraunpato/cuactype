@@ -60,6 +60,10 @@
 
         }
 
+        &.active.is-last::before {
+            left: 65%;
+        }
+
         &.correct {
             color: var(--greeen);
         }
@@ -174,7 +178,39 @@
 
     }
 
-    function onKeyDown() {}
+    //Decimos a la funcion que reciba un evento
+    function onKeyDown(event) {
+
+        //Recuperamos los elementos actuales
+        const $currentWord = $paragraph.querySelector('v-word.active')
+        const $currentLetter = $currentWord.querySelector('v-letter.active')
+
+           //El evento es cuando se presiona una tecla
+        const { key } = event
+        
+        //Si se presiona la tecla de espacio
+        if (key === ' ') {
+            //prevenimos el comportamiento por defecto de la tecla de espacio
+            event.preventDefault()
+
+            //Recuperamos la siguiente palabra usando nextElementSibling, que busca el siguiente elemento hermano de currentWord
+            const $nextWord = $currentWord.nextElementSibling
+            //Obtenemos la primer letra de la siguiente palabra
+            const $nextLetter = $nextWord.querySelector('v-letter')
+
+            //Eliminamos la clase active de la palabra y letra actual usando classList.remove
+            $currentWord.classList.remove('active')
+            $currentLetter.classList.remove('active')
+
+            //Agregamos la clase activa a la siguiente palabra y letra
+            $nextWord.classList.add('active')
+            $nextLetter.classList.add('active')
+            //Reseteamos el input
+            $input.value = ''
+        }
+    }
+
+
     function onKeyUp(){
         //Recuperamos los elementos actuales
         const $currentWord = $paragraph.querySelector('v-word.active')
@@ -201,7 +237,22 @@
             $letter.classList.add(letterClass)
             
         })
+        //Limpiamos la clase active de la letra actual
+        $currentLetter.classList.remove('active', ('is-last'))
+        //Recuperamos la longitud del input y utilizando allLetters le ponemos que ponga la clase active a la letra en esa posicion. Es decir si mi input tiene 9 caracteres entonces el 9 caracter será la letra activa
+        const inputLength = $input.value.length
+        // $allLetters[inputLength].classList.add('active')
 
+        //La constante nextActiveLetter guarda el valor de allLetters y la longitud del input 
+        const $nextActiveLetter = $allLetters[inputLength]
+        
+        //Si no se encuentra al final del array agrega la clase active en caso contrario agrega la clase active y la clase is-last
+        if ($nextActiveLetter) {
+            $nextActiveLetter.classList.add('active')
+        } else {
+            $currentLetter.classList.add('active', 'is-last')
+            //gameover si no hay siguiente palabra
+        }
 
     }
 
