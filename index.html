@@ -1,0 +1,162 @@
+<title>Cuactype - Test your typing skills</title>
+<style>
+    :root {
+    color-scheme: light dark;
+    --greeen: #00b755;
+    --yellow: #daaf38;
+    --red: #ca4754;
+    --black: #222;
+    --gray: #999;
+    }
+
+    body {
+        background: var(--black);
+        font-family: monospace;
+        display: grid;
+        padding: 32px;
+        justify-content: center;
+        margin-top: 32px;
+        padding: 16px;
+    }
+    
+    section {
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        max-width: 500px;
+    }
+
+    time {
+        color: var(--yellow);
+    }
+
+    input {
+        z-index: -999;
+        position: absolute;
+        top: 0;
+        left: 0;
+        pointer-events: none;
+    }
+
+    p {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 3px 8px;
+        margin: 0;
+    }
+
+    v-letter {
+        color: var(--gray);
+        position: relative;
+
+        &.active::before {
+            content: "|";
+            color: var(--yellow);
+            font-size: 14px;
+            position: absolute;
+            left: -65%;
+            animation:  1s blink infinite ease-in-out;
+
+        }
+
+
+    }
+
+    @keyframes blink {
+
+        0%, 50% {
+        opacity:1;
+        }
+
+        100% {
+        opacity: 0;
+    }
+
+}
+
+</style>
+
+
+<body>
+    <main>
+        <section id="game">
+            <time></time>
+            <p></p>
+            <input autofocus>
+        </section>
+    </main>
+</body>
+
+<script>
+
+    //recuperamos el contenido de cada una de las etiquetas
+    const $time = document.querySelector('time');
+    const $paragraph = document.querySelector('p');
+    const $input = document.querySelector('input');
+
+    const INITIAL_TIME = 30;
+
+    const TEXT = "El zorro marron rapida y velozmente salto sobre el agil perro que dormia junto al rio tranquilo y sereno bajo el cielo azul y despejado";
+
+    let words = []
+    let currentTime = INITIAL_TIME
+
+
+    initGame()
+    initEvents()
+
+    //Creamos la funcion que inicia el juego
+    function initGame() {
+        //Utilizando el .split y el espacio transforma las palabras en el TEXT. Solamente toma las primeras 32 palabras.
+        words = TEXT.split(' ').slice(0,32)
+        //Inicializamos la variable currentTime con el valor de INITIAL_TIME cada que el juego se reinicia
+        currentTime = INITIAL_TIME
+
+        //Renderizamos el timer en la página
+        $time.textContent = currentTime
+
+        //Creamos el párrafo usando las palabras del array.
+
+        $paragraph.innerHTML = words.map((word, index) => {
+
+    //Creamos la constante letter y hacemos que esta divida cada palabra en las letras que la componen. Envolvemos cada palabra en la etiqueta word y cada letra en la etiqueta letter
+            const letters = word.split('')
+
+            return ` <v-word>
+                ${letters
+                .map(letter => `<v-letter>${letter}</v-letter>`)
+                .join('')
+                }
+                </v-word>
+
+            `
+        }).join('')
+
+
+        //Creamos la constante $firstWord que toma el primer elemento v-word y le agrega la clase active. Utilizando la misma constante obtenemos con querySelector el primer elemento letter y le agregamos la clase active. Esto nos servirá para el cursor
+        const $firstWord = $paragraph.querySelector('v-word')
+        $firstWord.classList.add('active')
+        $firstWord.querySelector('v-letter').classList.add('active')
+
+        //Creamos la variable que alojara el intervalo y le decimos que ajuste el valor del time cada 1 segundo
+        const intervalID = setInterval(() => {
+            currentTime--
+            $time.textContent=currentTime
+        //Creamos un if que imprime un mensaje en la consola cuando el currentTime es igual a 0
+            if (currentTime === 0) {
+                clearInterval(intervalID)
+                gameOver()
+            }
+        },1000)
+
+    }
+
+    //Creamos la funcion para cada uno de los eventos
+    function initEvents() { }
+
+    function gameOver () {
+        console.log('findeljuego')
+    }
+
+</script>
