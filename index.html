@@ -209,7 +209,7 @@
 
             //Eliminamos la clase active de la palabra y letra actual usando classList.remove
             $currentWord.classList.remove('active', 'marked')
-            $currentLetter.classList.remove('active')
+            $currentLetter.classList.remove('active', 'is-active')
 
             //Agregamos la clase activa a la siguiente palabra y letra
             $nextWord.classList.add('active')
@@ -224,6 +224,45 @@
             const classToAdd = hasMissedLetters ? 'marked' : 'correct'
 
             $currentWord.classList.add(classToAdd)
+            return
+        }
+
+        //Para la tecla backspace/borrar/retroceso utilizamos una lógica parecida que con el espacio, pero aplicada a la palabra anterior
+        if (key === 'Backspace') {
+            const $prevWord = $currentWord.previousElementSibling
+        //de la letra actual buscamos la letra anterior
+            const $prevLetter = $currentLetter.previousElementSibling
+
+            //Si no tenemos una palabra anterior ni una letra anterior evitamos el comportamiento por defecto del backspace
+            if (!$prevWord && !$prevLetter) {
+                event.preventDefault()
+                return
+            }
+         //Creamos la constante para las palabras con la clase marked
+        const $wordMarked = $paragraph.querySelector('v-word.marked')
+
+            //Si tengo una palabra marcada y no tengo una letra previa evito que backspace funcione por defecto porque estoy en la letra inicial de la siguiente palabra
+
+            if($wordMarked && !$prevLetter) {
+                event.preventDefault()
+            //Al hacer backspace le quitamos la clase marked a la palabra previa y le agregamos la clase active para que se convierta en la palabra activa
+                $prevWord.classList.remove('marked')
+                $prevWord.classList.add('active')
+                //Creamos una clase para indicar a que letra regresar cuando se use el backspace
+                const $letterToGo = $prevWord.querySelector('v-letter:last-child')
+
+                //Quitamos la clase active a la letra actual y se la agregamos a la letra a la que regresamos con el backspace
+                $currentLetter.classList.remove('active')
+                $letterToGo.classList.add('active')
+                //Obtenemos todas las letras con la clase correct e incorrect del input y las convertimos en un array y mapeamos cada elemento
+                $input.value = [...$prevWord.querySelectorAll('v-letter.correct, v-letter.incorrect')].map( //Sacamos el innerText de cada elemento ($el) y comprobamos si contienen la clase correct, si la contienen lo mantenemos igual y sino las sustituimos por un *
+                $el => {
+                    return $el.classList.contains('correct') ? $el.innerText : '*'
+                }).join('') //con esto convertimos lo que obtuvimos en un string
+
+            }
+
+
         }
     }
 
